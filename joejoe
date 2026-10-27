@@ -1,0 +1,3173 @@
+# WindUI Shiny / WindUI Boreal — Complete Documentation for Developers and AI Agents
+
+> WindUI Shiny is a refined fork of the original WindUI Roblox UI library. It preserves the original API style while adding visual refinements, fixes, and extra elements such as `MultiSection`, `ButtonKeybind`, `ToggleKeybind`, `Video`, `Watermark`, background video, sidebar controls, advanced notifications, and several source-observed elements like `Stepper`, `Segmented`, `Progress`, and `Stats`.
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Credits and Terms](#credits-and-terms)
+3. [Loading WindUI Shiny](#loading-windui-shiny)
+4. [Quick Start](#quick-start)
+5. [Global API](#global-api)
+6. [Themes](#themes)
+7. [Window](#window)
+8. [Window Runtime Methods](#window-runtime-methods)
+9. [Window Subsystems](#window-subsystems)
+10. [Key System](#key-system)
+11. [Tabs](#tabs)
+12. [Sidebar Tab Sections](#sidebar-tab-sections)
+13. [Sidebar Elements](#sidebar-elements)
+14. [Dialogs](#dialogs)
+15. [Popups](#popups)
+16. [Notifications / Notify with Buttons](#notifications--notify-with-buttons)
+17. [Tags](#tags)
+18. [Element Sections](#element-sections)
+19. [MultiSection](#multisection)
+20. [Elements Overview](#elements-overview)
+21. [Button](#button)
+22. [ButtonKeybind](#buttonkeybind)
+23. [Toggle](#toggle)
+24. [ToggleKeybind](#togglekeybind)
+25. [Slider](#slider)
+26. [Stepper](#stepper)
+27. [Dropdown](#dropdown)
+28. [Segmented](#segmented)
+29. [Input](#input)
+30. [Keybind](#keybind)
+31. [Colorpicker](#colorpicker)
+32. [Paragraph](#paragraph)
+33. [Code](#code)
+34. [Divider](#divider)
+35. [Space](#space)
+36. [Image](#image)
+37. [Video](#video)
+38. [Progress](#progress)
+39. [Stats](#stats)
+40. [Legacy Group Compatibility](#legacy-group-compatibility)
+41. [Config System](#config-system)
+42. [Flag Runtime API](#flag-runtime-api)
+43. [Shortcut Runtime API](#shortcut-runtime-api)
+44. [Icons](#icons)
+45. [AI Agent Implementation Rules](#ai-agent-implementation-rules)
+46. [Complete Starter Template](#complete-starter-template)
+47. [Troubleshooting](#troubleshooting)
+
+---
+
+## Overview
+
+WindUI Shiny, also called **WindUI Boreal** in the provided build header, is a Roblox Luau UI library for script hubs. It is a fork of WindUI with:
+
+- Modernized visuals.
+- API compatibility with original WindUI patterns.
+- Window/tabs/sections and many interactive elements.
+- Key system integrations.
+- Themes and gradients.
+- Config saving/loading.
+- Extra Shiny-specific features such as:
+  - `ModernLayout`
+  - background video
+  - watermark
+  - bottom drag bar control
+  - sidebar labels/buttons/spaces/dividers
+  - notification action buttons
+  - `MultiSection`
+  - `ButtonKeybind`
+  - `ToggleKeybind`
+  - `Video`
+  - source-observed `Stepper`, `Segmented`, `Progress`, and `Stats`
+
+WindUI Shiny keeps the same general usage model:
+
+```lua
+local WindUI = loadstring(game:HttpGet("SHINY_LOADER_URL"))()
+local Window = WindUI:CreateWindow({...})
+local Tab = Window:Tab({...})
+Tab:Button({...})
+```
+
+---
+
+## Credits and Terms
+
+- Original WindUI was created by **Footagesus**.
+- Original repository: `https://github.com/Footagesus/WindUI`
+- WindUI Shiny is a separately maintained fork.
+- Full credit for the base framework, architecture, and core systems belongs to the original author.
+- Provided as-is for educational and personal use.
+- Do not claim WindUI or WindUI Shiny as your own work.
+- Not affiliated with or endorsed by Roblox Corporation.
+
+---
+
+## Loading WindUI Shiny
+
+### WindUI Shiny Loader
+
+Use the fork loader when you specifically want WindUI Shiny/Boreal features:
+
+```lua
+local WindUI = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal"
+))()
+```
+
+### Original WindUI Latest Loader
+
+This loads upstream WindUI, not Shiny:
+
+```lua
+local WindUI = loadstring(game:HttpGet(
+    "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"
+))()
+```
+
+### Original WindUI Specific Version
+
+```lua
+local Version = "1.6.41"
+local WindUI = loadstring(game:HttpGet(
+    "https://github.com/Footagesus/WindUI/releases/download/" .. Version .. "/main.lua"
+))()
+```
+
+### Agent Note
+
+If the user asks for **WindUI Shiny**, use the Shiny loader, not the original WindUI release loader. Original WindUI loaders are useful only for compatibility comparison.
+
+---
+
+## Quick Start
+
+```lua
+local WindUI = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal"
+))()
+
+WindUI:SetNotificationLower(true)
+
+local Window = WindUI:CreateWindow({
+    Title = "Shiny Hub",
+    Author = "by developer",
+    Folder = "ShinyHub",
+    Icon = "sparkles",
+    Theme = "Dark",
+    ToggleKey = Enum.KeyCode.LeftShift,
+    Transparent = true,
+    Resizable = true,
+    ModernLayout = true,
+    BottomDragBarEnabled = true,
+    Watermark = {
+        Enabled = true,
+        Text = "Shiny Hub | v1.0.0",
+        Position = "bottom-right",
+        Opacity = 0.45,
+    },
+})
+
+local MainTab = Window:Tab({
+    Title = "Main",
+    Icon = "house",
+    Border = true,
+})
+
+MainTab:Button({
+    Title = "Notify",
+    Desc = "Shows a notification",
+    Icon = "bell",
+    Callback = function()
+        WindUI:Notify({
+            Title = "Hello",
+            Content = "WindUI Shiny is loaded.",
+            Icon = "check-circle",
+            Duration = 3,
+        })
+    end,
+})
+
+MainTab:ToggleKeybind({
+    Title = "Feature",
+    Desc = "Toggle with keybind",
+    Value = false,
+    Keybind = "G",
+    Flag = "feature_toggle_keybind",
+    Callback = function(state)
+        print("Feature:", state)
+    end,
+})
+
+MainTab:Select()
+```
+
+---
+
+## Global API
+
+Methods and properties available on the main `WindUI` object.
+
+| API | Description |
+|---|---|
+| `WindUI:CreateWindow(config)` | Creates the single main window. Shiny supports one window per loaded library instance. |
+| `WindUI:Notify(config)` | Creates a notification; returns a notification object. Supports buttons. |
+| `WindUI:Popup(config)` | Creates a standalone popup. |
+| `WindUI:AddTheme(theme)` | Adds a custom theme table. |
+| `WindUI:SetTheme(name)` | Applies an existing theme by name. Returns the theme table or `nil`. |
+| `WindUI:GetThemes()` | Returns the themes table. |
+| `WindUI:GetCurrentTheme()` | Returns current theme name. |
+| `WindUI:Gradient(colors, config)` | Creates a gradient table with `Color` and `Transparency` sequences. |
+| `WindUI:SetFont(fontId)` | Sets the global UI font. |
+| `WindUI:SetParent(parent)` | Moves WindUI ScreenGuis to a different parent. |
+| `WindUI:SetNotificationLower(bool)` | Moves notifications lower, useful on mobile. |
+| `WindUI:GetTransparency()` | Returns current transparent state. |
+| `WindUI:GetWindowSize()` | Returns current window size if a window exists. |
+| `WindUI:Localization(config)` | Enables/configures localization. |
+| `WindUI:SetLanguage(code)` | Sets localization language. |
+| `WindUI:ToggleAcrylic(enabled)` | Enables/disables acrylic model effect if configured. |
+| `WindUI:OnThemeChange(callback)` | Registers a callback fired when theme changes. |
+| `WindUI.Services` | Key-system service registry. Includes `platoboost`, `pandadevelopment`, `luarmor`, and source-observed `junkiedevelopment`. |
+| `WindUI.Creator` | Internal creator module. Advanced usage only. |
+| `WindUI.Version` | Version string. The provided Boreal build reports `0.0.0` internally and header `v0.0.2`. |
+
+### Global Setup Examples
+
+```lua
+WindUI:SetNotificationLower(true)
+WindUI:SetFont("rbxassetid://12187365364")
+WindUI:OnThemeChange(function(themeName)
+    print("Theme changed:", themeName)
+end)
+```
+
+---
+
+## Themes
+
+### Create a Custom Theme
+
+```lua
+WindUI:AddTheme({
+    Name = "My Theme",
+    Accent = Color3.fromHex("#18181b"),
+    Background = Color3.fromHex("#101010"),
+    Outline = Color3.fromHex("#FFFFFF"),
+    Text = Color3.fromHex("#FFFFFF"),
+    Placeholder = Color3.fromHex("#7a7a7a"),
+    Button = Color3.fromHex("#52525b"),
+    Icon = Color3.fromHex("#a1a1aa"),
+})
+
+WindUI:SetTheme("My Theme")
+```
+
+### Gradient Theme Values
+
+Theme values may be `Color3`, hex strings, numbers for transparency keys, functions, or gradient tables.
+
+```lua
+local gradient = WindUI:Gradient({
+    ["0"] = { Color = Color3.fromHex("#1f1f23"), Transparency = 0 },
+    ["100"] = { Color = Color3.fromHex("#18181b"), Transparency = 0 },
+}, {
+    Rotation = 0,
+})
+```
+
+### Built-In Themes Observed in Shiny/Boreal
+
+The provided Boreal source includes these themes:
+
+- `Dark`
+- `Light`
+- `Rose`
+- `Plant`
+- `Red`
+- `Indigo`
+- `Sky`
+- `Violet`
+- `Amber`
+- `Emerald`
+- `Midnight`
+- `Crimson`
+- `MonokaiPro` / `Monokai Pro`
+- `CottonCandy` / `Cotton Candy`
+- `Mellowsi`
+- `Rainbow`
+
+Common theme keys include:
+
+```lua
+Name
+Accent
+Dialog
+Outline
+Text
+Placeholder
+Background
+Button
+Icon
+Toggle
+Slider
+Checkbox
+PanelBackground
+PanelBackgroundTransparency
+Primary
+Metadata
+```
+
+Additional theme tags are used internally through fallback keys such as:
+
+```lua
+WindowBackground
+WindowShadow
+WindowTopbarTitle
+WindowTopbarAuthor
+WindowTopbarIcon
+WindowTopbarButtonIcon
+WindowSearchBarBackground
+TabBackground
+TabBackgroundHover
+TabBackgroundActive
+TabText
+TabTitle
+TabIcon
+TabBorder
+ElementBackground
+ElementTitle
+ElementDesc
+ElementIcon
+PopupBackground
+PopupTitle
+PopupContent
+PopupIcon
+DialogBackground
+DialogTitle
+DialogContent
+Notification
+NotificationTitle
+NotificationContent
+NotificationBorder
+SectionTitle
+SectionDesc
+SectionIcon
+SectionBoxBackground
+SectionBoxBorder
+DropdownTabBorder
+LabelBackground
+```
+
+### Theme Selection Pattern
+
+```lua
+local Themes = {}
+for themeName in pairs(WindUI:GetThemes()) do
+    table.insert(Themes, themeName)
+end
+
+SettingsTab:Dropdown({
+    Title = "Theme",
+    Values = Themes,
+    Value = WindUI:GetCurrentTheme() or "Dark",
+    Callback = function(themeName)
+        WindUI:SetTheme(themeName)
+    end,
+})
+```
+
+---
+
+## Window
+
+Create the main window with `WindUI:CreateWindow(config)`.
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "My Hub",
+    Icon = "door-open",
+    Author = "by .ftgs",
+    Folder = "MyHub",
+    Size = UDim2.fromOffset(580, 460),
+    MinSize = Vector2.new(560, 350),
+    MaxSize = Vector2.new(850, 560),
+    ToggleKey = Enum.KeyCode.LeftShift,
+    Transparent = true,
+    Theme = "Dark",
+    Resizable = true,
+    SideBarWidth = 200,
+    BackgroundImageTransparency = 0.42,
+    HideSearchBar = true,
+    ScrollBarEnabled = false,
+})
+```
+
+### Window Config
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Title` | `string` | Window title. Default `"UI Library"`. |
+| `Author` | `string?` | Subtitle/author shown in topbar. |
+| `Icon` | `string?` | Icon name, prefixed icon, `rbxassetid://`, or URL. |
+| `IconSize` | `number?` | Default `22`. |
+| `IconThemed` | `boolean?` | Theme-color icon. |
+| `IconRadius` | `number?` | Rounded icon corner radius. |
+| `Folder` | `string?` | Creates folders for configs/assets/keys. Required for config manager. |
+| `Parent` | `Instance?` | Parent for window. Normally set by WindUI internals. |
+| `Size` | `UDim2?` | Default around `580x460`; clamped to min/max. |
+| `MinSize` | `Vector2?` | Default `Vector2.new(560, 350)`. |
+| `MaxSize` | `Vector2?` | Default `Vector2.new(850, 560)`. |
+| `Position` | `UDim2?` | Defaults center. |
+| `Resizable` | `boolean?` | Default `true`. |
+| `ToggleKey` | `Enum.KeyCode?` | Key to toggle open/closed. |
+| `Transparent` | `boolean?` | Transparent/acrylic-like window background state. |
+| `Theme` | `string?` | Theme name. Default `Dark`. |
+| `SideBarWidth` | `number?` | Default `200`. |
+| `HideSearchBar` | `boolean?` | Docs show `true` hides search; source default means search is visible unless explicitly hidden. |
+| `ScrollBarEnabled` | `boolean?` | Adds custom scrollbar to sidebar/tab content. |
+| `Background` | `string/table?` | Image source, gradient table, or `"video:<source>"`. |
+| `BackgroundVideo` | `string/number?` | Video source for background. |
+| `BackgroundImageTransparency` | `number?` | Default `0`. |
+| `ShadowTransparency` | `number?` | Default `0.7`. |
+| `Radius` | `number?` | Window radius. Default `16`. |
+| `ElementsRadius` | `number?` | Element radius override. Modern default `23`, normal default `12`. |
+| `TopBarButtonIconSize` | `number?` | Topbar icon size. Mac mode default `11`; default mode `16`. |
+| `Acrylic` | `boolean?` | Enables acrylic/blur effect. |
+| `ModernLayout` | `boolean?` | Enables Shiny modern compact/glass layout. |
+| `ModernLayoutMergeElements` | `boolean?` | Whether modern layout merges element shapes. Alias: `ModernLayoutMerge`. Default true. |
+| `IgnoreAlerts` | `boolean?` | If true, skips close confirmation. |
+| `HidePanelBackground` | `boolean?` | Hides main panel background. |
+| `AutoScale` | `boolean?` | Auto-scales window to viewport. Default true. |
+| `OpenButton` | `table/false?` | Floating/mobile open button. Set `false` to disable. |
+| `BottomDragBarEnabled` | `boolean?` | Bottom drag handle. Default true. |
+| `BottomDragEnabled` | `boolean?` | Alias for bottom drag handle. |
+| `Watermark` | `table/false?` | Creates background watermark. |
+| `User` | `table?` | Sidebar user block config. |
+| `Footer` | `table?` | Reserved/compatibility footer config. |
+| `Topbar` | `table?` | `{ Height = 52, ButtonsType = "Default" or "Mac" }`. |
+| `KeySystem` | `table?` | Access-control key system. |
+
+### Important Window Notes
+
+- WindUI Shiny allows only one window per loaded library instance. Creating a second window warns and returns nothing.
+- If `Folder` is set and file APIs exist, Shiny creates `WindUI/<Folder>/assets`, `<Folder>/assets`, and config paths.
+- `OpenButton = false` disables the open button behavior according to FAQ.
+
+---
+
+## Window Runtime Methods
+
+### Basic Window Control
+
+```lua
+Window:Open()
+Window:Close()
+Window:Toggle()
+Window:Destroy()
+Window:ToggleFullscreen()
+Window:SetToTheCenter()
+```
+
+### Window Text/Icon/Size
+
+```lua
+Window:SetTitle("New Title")
+Window:SetAuthor("by someone")
+Window:SetIconSize(24) -- number or UDim2
+Window:SetSize(UDim2.fromOffset(700, 500))
+Window:SetToggleKey(Enum.KeyCode.RightShift)
+```
+
+### Background Runtime Methods
+
+```lua
+Window:SetBackgroundVideo("1234567890")
+Window:SetBackgroundVideo("video:rbxassetid://1234567890")
+Window:SetBackgroundImage("rbxassetid://987654321")
+Window:SetBackgroundImageTransparency(0.35)
+Window:SetBackgroundTransparency(0.2)
+```
+
+Returns:
+
+- `SetBackgroundVideo(video)` returns `boolean`.
+- `SetBackgroundImage(image)` returns `boolean`.
+- transparency methods return `true/false` in source or nil in docs depending method/version.
+
+### Resizing, Scale, Panel, Transparency
+
+```lua
+Window:IsResizable(true)
+Window:SetUIScale(0.85)
+local scale = Window:GetUIScale()
+Window:ToggleTransparency(true)
+Window:SetPanelBackground(true)
+Window:SetPanelBackgroundVisible(true)
+Window:SetPanelBackgroundHidden(false)
+```
+
+`Window:SetPanelBackground(value)` in source treats booleans with compatibility behavior. For new code, prefer:
+
+```lua
+Window:SetPanelBackgroundVisible(true)
+Window:SetPanelBackgroundHidden(false)
+```
+
+### Locking Elements
+
+Official docs mention:
+
+```lua
+Window:LockAllElements()
+Window:UnlockAllElements()
+Window:GetAllElements()
+```
+
+The provided source exposes:
+
+```lua
+Window:LockAll()
+Window:UnlockAll()
+Window:GetLocked()
+Window:GetUnlocked()
+```
+
+For agents, prefer the source-observed names unless the user’s Shiny version explicitly documents aliases.
+
+### Event Triggers
+
+```lua
+Window:OnOpen(function() end)
+Window:OnClose(function() end)
+Window:OnDestroy(function() end)
+```
+
+### Tabs and Sections
+
+```lua
+local Tab = Window:Tab({ Title = "Main" })
+Window:SelectTab(Tab)
+local allTabs = Window:GetTabs()
+
+local TabSection = Window:Section({ Title = "Combat", Opened = true })
+local CombatTab = TabSection:Tab({ Title = "Aimbot" })
+```
+
+### Topbar and Close Buttons
+
+```lua
+Window:DisableTopbarButtons({ "Close", "Minimize" })
+```
+
+Source-level topbar button method uses positional arguments internally:
+
+```lua
+Window:CreateTopbarButton(
+    "Button Name",
+    "icon-name",
+    function() end,
+    996, -- layout order
+    true, -- icon themed
+    Color3.fromHex("#60C762"),
+    16 -- icon size
+)
+```
+
+Use cautiously because this is lower-level than normal element APIs.
+
+---
+
+## Window Subsystems
+
+### User Block
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "User Example",
+    User = {
+        Enabled = true,
+        Anonymous = false,
+        Callback = function()
+            print("User clicked")
+        end,
+    },
+})
+
+Window.User:Enable()
+Window.User:Disable()
+Window.User:SetAnonymous(true)
+```
+
+### Open Button
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Open Button Demo",
+    OpenButton = {
+        Title = "Open UI",
+        Icon = "sparkles",
+        Enabled = true,
+        Position = UDim2.new(0.5, 0, 0, 28),
+        OnlyIcon = false,
+        Draggable = true,
+        OnlyMobile = false,
+        CornerRadius = UDim.new(1, 0),
+        StrokeThickness = 2,
+        Scale = 1,
+        Color = ColorSequence.new(Color3.fromHex("#40c9ff"), Color3.fromHex("#e81cff")),
+    },
+})
+
+Window:EditOpenButton({
+    Title = "Open Shiny",
+    Icon = "star",
+    Scale = 0.8,
+})
+```
+
+FAQ: pass `OpenButton = false` in `CreateWindow()` to disable it.
+
+### Topbar
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Topbar Demo",
+    Topbar = {
+        Height = 52,
+        ButtonsType = "Mac", -- or "Default"
+    },
+})
+```
+
+### ModernLayout
+
+`ModernLayout` is a creation-time style mode.
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Modern Window",
+    Folder = "WindUI-Modern",
+    ModernLayout = true,
+    ElementsRadius = 24,
+})
+```
+
+Effects:
+
+1. Tighter default element padding (`10` instead of `13`).
+2. Larger default element radius (`23` instead of `12`).
+3. Compact tab spacing (`1` instead of `6`) when merged.
+4. Glass-style outlines for tabs, sections, multi sections, and video.
+5. Shape recalculation for grouped/adjacent elements.
+
+There is no dedicated runtime `SetModernLayout`; choose it when creating the window.
+
+### BottomDragBarEnabled
+
+Controls the bottom drag handle.
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Bottom Drag Demo",
+    BottomDragBarEnabled = true,
+})
+
+Window:SetBottomDragBarEnabled(false)
+task.wait(0.5)
+Window:SetBottomDragBarEnabled(true)
+```
+
+Aliases:
+
+```lua
+BottomDragBarEnabled = true
+BottomDragEnabled = true
+```
+
+Internally enabled when neither config is explicitly `false`.
+
+### Background Video
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Background Media",
+    Folder = "WindUI-BG",
+    BackgroundVideo = "1234567890",
+})
+```
+
+Accepted formats:
+
+1. `number` — converted to `rbxassetid://...`
+2. numeric string — `"1234567890"`
+3. `rbxassetid://...`
+4. `"video:<source>"`
+5. URL — requires executor file APIs for best reliability
+
+Runtime:
+
+```lua
+Window:SetBackgroundVideo("1234567890")
+Window:SetBackgroundVideo("video:rbxassetid://1234567890")
+Window:SetBackgroundImage("rbxassetid://987654321")
+Window:SetBackgroundImageTransparency(0.35)
+Window:SetBackgroundTransparency(0.2)
+```
+
+### Watermark
+
+Watermark adds a floating text label over the window background.
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Watermark Demo",
+    Watermark = {
+        Enabled = true,
+        Text = " | v1.0.0",
+        Opacity = 0.45,
+        Position = "bottom-right",
+        Size = 14,
+        Padding = 12,
+        Offset = Vector2.new(0, 0),
+    },
+})
+```
+
+You can also create/replace it at runtime:
+
+```lua
+local WM = Window:Watermark({
+    Text = "Shiny | Build 240",
+    Position = "top-right",
+    Opacity = 0.55,
+    Size = 15,
+    Padding = 14,
+    Offset = Vector2.new(-4, 2),
+    RichText = true,
+})
+```
+
+Watermark config:
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Enabled` | `boolean` | Default true. |
+| `Text` | `string` | Default `"Watermark"`. |
+| `Opacity` | `number` | Clamped `0` to `1`; default `0.45`. |
+| `Position` | `string/UDim2` | Preset or custom position. |
+| `Size` | `number` | Minimum `8`; default `14`. |
+| `Padding` | `number` | Preset position padding. |
+| `Offset` | `Vector2` | Offset from preset. |
+| `Color` | `Color3?` | Optional explicit color. |
+| `RichText` | `boolean` | Rich text tags. |
+| `AnchorPoint` | `Vector2?` | Used when `Position` is `UDim2`. |
+
+Preset positions:
+
+```text
+top-left, top-center, top-right
+center-left, center, center-right
+bottom-left, bottom-center, bottom-right
+```
+
+Watermark methods:
+
+```lua
+WM:SetEnabled(true)
+WM:SetText("New text")
+WM:SetOpacity(0.7)
+WM:SetPosition("bottom-left")
+WM:SetPosition(UDim2.new(0.5, 0, 0, 24))
+WM:SetOffset(Vector2.new(0, 0))
+WM:SetPadding(12)
+WM:SetSize(14)
+WM:Destroy()
+```
+
+---
+
+## Key System
+
+Key system is defined inside `CreateWindow` config.
+
+### API Service Key System
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Protected Hub",
+    Folder = "ProtectedHub",
+    KeySystem = {
+        Note = "Get a key using one of the supported services.",
+        API = {
+            { Type = "platoboost", ServiceId = 1234, Secret = "secret" },
+            { Type = "pandadevelopment", ServiceId = "id" },
+            { Type = "luarmor", ScriptId = "script_id", Discord = "https://discord.gg/example" },
+        },
+        SaveKey = true,
+    },
+})
+```
+
+### Supported Services
+
+Documented:
+
+- `platoboost`
+- `pandadevelopment`
+- `luarmor`
+
+Observed in source:
+
+- `junkiedevelopment`
+
+Service registry format:
+
+```lua
+WindUI.Services.myservice = {
+    Name = "My Service",
+    Icon = "droplet",
+    Args = { "ServiceId" },
+    New = function(ServiceId)
+        return {
+            Verify = function(key)
+                return key == "valid", "message"
+            end,
+            Copy = function()
+                setclipboard("https://example.com/get-key")
+            end,
+        }
+    end,
+}
+```
+
+### Custom `KeyValidator`
+
+Although Shiny emphasizes service APIs, source compatibility supports `KeyValidator`:
+
+```lua
+KeySystem = {
+    Title = "Access Required",
+    Note = "Enter the correct key.",
+    KeyValidator = function(key)
+        return key == "HelloWorld"
+    end,
+    SaveKey = true,
+}
+```
+
+### Key URL and Thumbnail
+
+```lua
+KeySystem = {
+    Note = "Click Get Key to copy the link.",
+    URL = "https://discord.gg/example",
+    KeyValidator = function(key)
+        return key == "secret"
+    end,
+    SaveKey = true,
+    Thumbnail = {
+        Image = "rbxassetid://123456789",
+        Title = "Premium Access",
+        Width = 200,
+    },
+}
+```
+
+### Key Save Behavior
+
+When `SaveKey = true`, Shiny stores keys under:
+
+```text
+[Window.Folder or Temp]/[hwid/userId].key
+```
+
+The source validates saved keys on future loads.
+
+### Agent Guidance
+
+- Prefer `KeyValidator` for simple keys.
+- Prefer `API = {...}` for third-party key services.
+- Avoid hard-coding real service secrets in public code examples.
+- The old `KeySystem.Key` path exists in source for compatibility, but agents should prefer `KeyValidator` or service `API`.
+
+---
+
+## Tabs
+
+Tabs are main content containers.
+
+```lua
+local Tab = Window:Tab({
+    Title = "Tab Title",
+    Desc = "Optional tooltip/description",
+    Icon = "bird",
+    IconColor = Color3.fromRGB(100, 150, 255),
+    IconShape = "Square", -- or "Circle"
+    IconThemed = true,
+    Locked = false,
+    ShowTabTitle = false,
+    Border = true,
+    LayoutOrder = 1,
+})
+
+Tab:Select()
+```
+
+### Tab Methods
+
+```lua
+Tab:Select()
+Tab:ScrollToTheElement(1)
+Tab:LockAll()
+Tab:UnlockAll()
+local locked = Tab:GetLocked()
+local unlocked = Tab:GetUnlocked()
+```
+
+The base element wrapper injects common setters into many elements, not tabs. For tab title/description mutation, original WindUI had `SetTitle`/`SetDesc`; Shiny source shown mainly documents selection/lock helpers.
+
+---
+
+## Sidebar Tab Sections
+
+`Window:Section()` creates collapsible groups in the left sidebar for tabs and sidebar controls.
+
+```lua
+local Section = Window:Section({
+    Title = "Section for tabs",
+    Icon = "bird",
+    IconThemed = true,
+    Opened = true,
+})
+
+local Tab1 = Section:Tab({ Title = "Tab 1" })
+local Tab2 = Section:Tab({ Title = "Tab 2" })
+```
+
+States:
+
+- Just text if no child items are created.
+- Expand/collapse once child tabs/elements exist.
+
+Sidebar section also supports sidebar label/button/space/divider helpers in source:
+
+```lua
+Section:Label({ Title = "Info", Icon = "info" })
+Section:Button({ Title = "Action", Callback = function() end })
+Section:Space({ Columns = 1 })
+Section:Divider({})
+Section:Open()
+Section:Close()
+```
+
+---
+
+## Sidebar Elements
+
+These APIs create controls in the left sidebar on the `Window` object.
+
+### Sidebar Label
+
+```lua
+local sbLabel = Window:SideBarLabel({
+    Title = "Quick Actions",
+    Icon = "sparkles",
+})
+```
+
+Aliases:
+
+```lua
+Window.SidebarLabel
+Window.Label
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` / `Text` | `string` | `"Label"` |
+| `Icon` | `string?` | nil |
+| `Placeholder` | `boolean` | false |
+| `Radius` | `number?` | nil |
+| `Height` | `number` | 34, min 18 |
+| `Size` | `UDim2?` | `UDim2.new(1, -7, 0, Height)` |
+| `Visible` | `boolean` | true |
+| `LayoutOrder` | `number?` | nil |
+
+Methods:
+
+```lua
+sbLabel:SetTitle("Quick Tools")
+sbLabel:SetVisible(true)
+sbLabel:Destroy()
+```
+
+### Sidebar Button
+
+```lua
+local sbButton = Window:SideBarButton({
+    Title = "Recenter",
+    Icon = "locate-fixed",
+    Variant = "Secondary",
+    Callback = function()
+        Window:SetToTheCenter()
+    end,
+})
+```
+
+Aliases:
+
+```lua
+Window.SidebarButton
+Window.Button
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` / `Text` | `string` | `"Button"` |
+| `Icon` | `string?` | nil |
+| `Callback` | `function?` | nil |
+| `Variant` | `string` | `"Secondary"` |
+| `FullRounded` | `boolean?` | nil |
+| `Radius` | `number?` | nil |
+| `Height` | `number` | 34, min 20 |
+| `Size` | `UDim2?` | `UDim2.new(1, -7, 0, Height)` |
+| `Visible` | `boolean` | true |
+| `LayoutOrder` | `number?` | nil |
+
+Methods:
+
+```lua
+sbButton:SetTitle("Center Window")
+sbButton:SetCallback(function() Window:SetToTheCenter() end)
+sbButton:SetVisible(true)
+sbButton:Destroy()
+```
+
+### Sidebar Space
+
+```lua
+local spaceFrame = Window:SideBarSpace({ Columns = 2 })
+```
+
+Aliases:
+
+```lua
+Window.SidebarSpace
+Window.Space
+```
+
+Returns a `Frame`, not a method-rich object.
+
+### Sidebar Divider
+
+```lua
+local dividerFrame = Window:SideBarDivider({
+    Title = "Tools",
+    TitleAlignment = "Left",
+})
+```
+
+Aliases:
+
+```lua
+Window.SidebarDivider
+Window.Divider
+```
+
+Returns a divider frame in sidebar context. For runtime method access, use `Tab:Divider(...)`.
+
+---
+
+## Dialogs
+
+Window dialogs are modal prompts attached to a window.
+
+```lua
+local Dialog = Window:Dialog({
+    Icon = "bird",
+    IconThemed = true,
+    Title = "Dialog Title",
+    Content = "Dialog content",
+    Buttons = {
+        { Title = "Confirm", Variant = "Primary", Callback = function() end },
+        { Title = "Cancel", Variant = "Secondary", Callback = function() end },
+    },
+})
+```
+
+Documented methods:
+
+```lua
+Dialog:Show()
+Dialog:Close()
+```
+
+Source note: Shiny’s dialog creation opens the dialog immediately and returns an internal dialog object with `Open()`/`Close()` behavior. For portability, treat `Window:Dialog({...})` as showing immediately unless your version documents otherwise.
+
+Button options:
+
+| Key | Type |
+|---|---|
+| `Title` | `string` |
+| `Icon` | `string?` |
+| `Variant` | `string?` — `Primary`, `Secondary`, `Tertiary`, etc. |
+| `Callback` | `function?` |
+
+---
+
+## Popups
+
+Global standalone popup:
+
+```lua
+WindUI:Popup({
+    Title = "Popup Title",
+    Icon = "info",
+    IconThemed = true,
+    Content = "Content",
+    Buttons = {
+        { Title = "Cancel", Variant = "Tertiary", Callback = function() end },
+        { Title = "Continue", Icon = "arrow-right", Variant = "Primary", Callback = function() end },
+    },
+})
+```
+
+Popup config also supports source-observed `Thumbnail`:
+
+```lua
+WindUI:Popup({
+    Title = "With Thumbnail",
+    Content = "Popup content",
+    Thumbnail = {
+        Image = "rbxassetid://123456789",
+        Title = "Preview",
+    },
+    Buttons = {},
+})
+```
+
+---
+
+## Notifications / Notify with Buttons
+
+`WindUI:Notify(config)` creates a notification and returns a notification object.
+
+### Basic Notification
+
+```lua
+WindUI:Notify({
+    Title = "Notification Title",
+    Content = "Content!",
+    Duration = 3,
+    Icon = "bird",
+})
+```
+
+### Notification with Buttons
+
+```lua
+local n = WindUI:Notify({
+    Title = "Configuration Loaded",
+    Content = "Choose an action below.",
+    Icon = "bell",
+    IconThemed = true,
+    Background = "rbxassetid://0",
+    BackgroundImageTransparency = 0.75,
+    Duration = 12,
+    CanClose = true,
+    Buttons = {
+        {
+            Title = "Apply",
+            Icon = "check",
+            Variant = "Primary",
+            CloseOnClick = false,
+            Callback = function(notification, button, index)
+                print("Apply clicked")
+            end,
+        },
+        {
+            Title = "Dismiss",
+            Icon = "x",
+            Variant = "Secondary",
+            CloseOnClick = true,
+            Callback = function()
+                print("Dismiss clicked")
+            end,
+        },
+    },
+})
+
+task.delay(10, function()
+    if n and not n.Closed then
+        n:Close()
+    end
+end)
+```
+
+### Notify Config
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Title` | `string` | `"Notification"` |
+| `Content` | `string?` | Body text. |
+| `Icon` | `string?` | Optional icon. |
+| `IconThemed` | `boolean?` | Themed icon coloring. |
+| `Background` | `string?` | Background image source. |
+| `BackgroundImageTransparency` | `number?` | Default `0`. |
+| `Duration` | `number` | Docs default `5`; older simple docs say `3`. Source default is `5`. |
+| `CanClose` | `boolean` | Default true. |
+| `Buttons` | `table[]` | Action buttons. |
+| `ButtonLayout` / `ButtonsLayout` | `string?` | `Auto`, `Horizontal`, or `Vertical` observed. |
+| `ButtonAlignment` / `ButtonsAlignment` | `string?` | `Left`, `Center`, `Right`. |
+| `ButtonHeight` | `number?` | Default `40`, min `28`. |
+| `ButtonPadding` | `number?` | Default `6`. |
+| `ButtonDebounce` | `boolean?` | Default true. |
+| `ButtonCooldown` | `number?` | Default `0.12`. |
+
+### Notification Button Config
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Title` / `Text` | `string` | Required/recommended. |
+| `Icon` | `string?` | Optional icon. |
+| `Variant` | `string?` | Button style. |
+| `Callback` | `function?` | Called on click. Source passes `(notification, buttonObject, index)`. |
+| `CloseOnClick` | `boolean` | Default true. |
+| `CloseDelay` | `number?` | Delay before close. |
+| `CloseBeforeCallback` | `boolean?` | Close before callback if true. |
+| `Debounce` | `boolean?` | Defaults to notification debounce. |
+| `Cooldown` | `number?` | Button cooldown. |
+| `Disabled` | `boolean?` | Starts disabled. |
+| `Width` | `number?` | Fixed button width. |
+| `Height` | `number?` | Fixed button height. |
+| `Visible` | `boolean?` | Default true. |
+| `LayoutOrder` | `number?` | Sort order. |
+| `RunAsync` / `Async` | `boolean?` | Async callback flow. |
+
+### Notification Methods
+
+```lua
+n:Close()
+```
+
+Button object methods observed internally:
+
+```lua
+button:Click()
+button:SetDisabled(true)
+button:SetVisible(false)
+button:SetTitle("New Title")
+```
+
+---
+
+## Tags
+
+Tags are compact badges in the topbar/sidebar area.
+
+```lua
+local Tag = Window:Tag({
+    Title = "v1.6.6",
+    Icon = "github",
+    Color = Color3.fromHex("#30ff6a"),
+    Radius = 0,
+    Border = true,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Tag"` |
+| `Icon` | `string?` | nil |
+| `Color` | `Color3/table` | `Color3.fromHex("#315dff")` |
+| `Radius` | `number` | `999` |
+| `Border` | `boolean` | false |
+
+Methods:
+
+```lua
+Tag:SetTitle("New")
+Tag:SetIcon("star")
+Tag:SetColor(Color3.fromRGB(255, 200, 0))
+Tag:Destroy()
+```
+
+---
+
+## Element Sections
+
+Element sections are collapsible containers inside tabs and other element containers.
+
+```lua
+local Section = Tab:Section({
+    Title = "Secure Settings",
+    Desc = "Locked by default",
+    Icon = "lock",
+    Box = true,
+    BoxBorder = true,
+    Opened = true,
+    Locked = false,
+    LockedTitle = "Unlock to edit",
+})
+```
+
+### Section Config
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Title` | `string` | `"Section"` |
+| `Desc` | `string?` | nil |
+| `Icon` | `string?` | nil |
+| `TextXAlignment` | `"Left"/"Center"/"Right"` | `"Left"` |
+| `TextSize` | `number` | `19` |
+| `DescTextSize` | `number` | `16` |
+| `Box` | `boolean` | false |
+| `BoxBorder` | `boolean` | false |
+| `FontWeight` | `Enum.FontWeight` | `SemiBold` |
+| `DescFontWeight` | `Enum.FontWeight` | `Medium` |
+| `TextTransparency` | `number` | `0.05` |
+| `DescTextTransparency` | `number` | `0.4` |
+| `Hover` | `boolean` | true when not false. |
+| `Opened` | `boolean` | false in Shiny source docs/source; older docs sometimes true. |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | Stored; lock label behavior varies. |
+| `HeaderSize` | `number` | `42` |
+| `IconSize` | `number` | `20` |
+| `HeaderGap` | `number` | `10` |
+| `HeaderPaddingX/Y` | `number?` | Dynamic default. |
+
+### Section Methods
+
+```lua
+Section:SetIcon("shield")
+Section:SetTitle("Protected Settings")
+Section:SetDesc("Unlock to change values")
+Section:Lock()
+Section:Unlock()
+Section:Open(true)   -- instant/no animation depending version
+Section:Close(false)
+Section:Destroy()
+```
+
+Locking a section:
+
+- Disables expand/collapse click.
+- Locks lockable child elements.
+- `LockedTitle` is stored; docs note no built-in lock-label renderer for this container in some versions.
+
+Sections receive child element constructors such as:
+
+```lua
+Section:Paragraph({...})
+Section:Button({...})
+Section:ButtonKeybind({...})
+Section:Toggle({...})
+Section:ToggleKeybind({...})
+Section:Slider({...})
+Section:Keybind({...})
+Section:Input({...})
+Section:Dropdown({...})
+Section:Code({...})
+Section:Colorpicker({...})
+Section:Section({...})
+Section:MultiSection({...})
+Section:Divider({...})
+Section:Space({...})
+Section:Image({...})
+Section:Video({...})
+```
+
+---
+
+## MultiSection
+
+`MultiSection` is an expandable container with tabbed inner content.
+
+```lua
+local Multi = MainTab:MultiSection({
+    Title = "Combat Modes",
+    Desc = "Switch between profiles",
+    Icon = "crosshair",
+    Box = true,
+    BoxBorder = true,
+    Opened = true,
+})
+
+local Rage = Multi:Tab({
+    Title = "Rage",
+    Desc = "Aggressive settings",
+    Icon = "flame",
+    Selected = true,
+})
+
+local Legit = Multi:Tab({
+    Title = "Legit",
+    Desc = "Low profile settings",
+    Icon = "shield-check",
+})
+
+Rage:Toggle({ Title = "Silent Aim", Value = false })
+Legit:Slider({ Title = "FOV", Value = { Min = 10, Max = 250, Default = 80 } })
+```
+
+### MultiSection Config
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Section"` |
+| `Desc` | `string?` | nil |
+| `Icon` | `string?` | nil |
+| `TextXAlignment` | `"Left"/"Center"/"Right"` | `"Left"` |
+| `TextSize` | `number` | `19` |
+| `DescTextSize` | `number` | `16` |
+| `Box` | `boolean` | false |
+| `BoxBorder` | `boolean` | false |
+| `FontWeight` | `Enum.FontWeight` | `SemiBold` |
+| `DescFontWeight` | `Enum.FontWeight` | `Medium` |
+| `TextTransparency` | `number` | `0.05` |
+| `DescTextTransparency` | `number` | `0.4` |
+| `Hover` | `boolean` | true |
+| `Opened` | `boolean` | false |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | Stored; no built-in label in some versions. |
+| `HeaderSize` | `number` | `42` |
+| `IconSize` | `number` | `20` |
+| `HeaderGap` | `number` | `10` |
+| `HeaderPaddingX/Y` | `number?` | Dynamic. |
+| `TabGap` | `number` | `6` |
+| `TabPaddingX` | `number` | `12` |
+| `TabPaddingY` | `number` | `8` |
+| `TabTextSize` | `number` | `15` |
+| `TabDescTextSize` | `number` | `13` |
+
+### MultiSection Methods
+
+```lua
+Multi:SetIcon("swords")
+Multi:SetTitle("Profiles")
+Multi:SetDesc("Switch behavior quickly")
+Multi:Lock()
+Multi:Unlock()
+Multi:SelectTab("Legit", true)
+Multi:SelectTab(1, false)
+Multi:SelectTab(Rage)
+local selected = Multi:GetSelectedTab()
+local tabs = Multi:GetTabs()
+local temp = Multi:Tab({ Title = "Temporary" })
+temp:Select(true)
+temp:Destroy()
+Multi:Open(true)
+Multi:Close(false)
+Multi:Destroy()
+```
+
+### MultiSection Tab Config
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Tab N"` |
+| `Desc` | `string?` | nil |
+| `Icon` | `string?` | nil |
+| `IconThemed` | `boolean?` | nil |
+| `Selected` | `boolean` | false |
+| `Opened` | `boolean` | Alias for immediate select. |
+
+### MultiSection Tab Methods
+
+```lua
+MultiTab:Select(isInstant)
+MultiTab:Destroy()
+```
+
+MultiSection tabs receive all standard element constructors.
+
+### Locked MultiSection Notes
+
+```lua
+local LockedMulti = MainTab:MultiSection({
+    Title = "Protected Profiles",
+    Desc = "Requires unlock",
+    Locked = true,
+    LockedTitle = "Unlock first",
+    Box = true,
+    Opened = true,
+})
+```
+
+Locking:
+
+1. Disables header interaction.
+2. Prevents tab click switching.
+3. Locks lockable child elements in all tabs.
+4. Programmatic `SelectTab(...)` still works even when locked.
+
+---
+
+## Elements Overview
+
+Element constructors available inside tabs, sections, MultiSection tabs, and compatible containers:
+
+```lua
+Paragraph
+Button
+ButtonKeybind
+Toggle
+ToggleKeybind
+Slider
+Stepper          -- source-observed
+Keybind
+Input
+Dropdown
+Segmented        -- source-observed
+Code
+Colorpicker
+Progress         -- source-observed
+Stats            -- source-observed
+Section
+MultiSection
+Space
+Divider
+Image
+Video
+Group            -- legacy compatibility
+```
+
+Common config fields:
+
+```lua
+Title
+Desc
+Icon
+Locked
+LockedTitle
+Flag
+Callback
+```
+
+Common runtime methods injected for many row-style elements:
+
+```lua
+:SetTitle(text)
+:SetDesc(text)
+:Highlight()
+:Destroy()
+:Lock()
+:Unlock()
+```
+
+Not every element supports every method directly; check each section below.
+
+---
+
+## Button
+
+```lua
+local Button = Tab:Button({
+    Title = "Button",
+    Desc = "Test",
+    Icon = "mouse-pointer-click",
+    IconThemed = false,
+    Color = Color3.fromRGB(100, 100, 255),
+    Justify = "Between",
+    IconAlign = "Right",
+    Size = "Default", -- Small, Default, Large
+    Locked = false,
+    LockedTitle = "Locked",
+    Callback = function()
+        print("Clicked")
+    end,
+})
+```
+
+Methods:
+
+```lua
+Button:SetTitle("New title")
+Button:SetDesc("New desc")
+Button:Lock()
+Button:Unlock()
+Button:Highlight()
+Button:Destroy()
+```
+
+---
+
+## ButtonKeybind
+
+`ButtonKeybind` combines a clickable row and assignable key trigger.
+
+```lua
+local BK = MainTab:ButtonKeybind({
+    Title = "Quick Action",
+    Desc = "Click row or press key",
+    Icon = "mouse-pointer-click",
+    IconThemed = true,
+    Color = "Accent",
+    Justify = "Between",
+    IconAlign = "Right",
+    Value = Enum.KeyCode.F,
+    CanChange = true,
+    Locked = false,
+    Callback = function(trigger)
+        print("Action triggered by:", trigger or "MouseClick")
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Button Keybind"` |
+| `Desc` | `string?` | nil |
+| `Icon` | `string` | `"mouse-pointer-click"` |
+| `IconThemed` | `boolean` | false |
+| `Color` | `string/Color3?` | nil |
+| `Justify` | `string` | `"Between"` |
+| `IconAlign` | `"Left"/"Right"` | `"Right"` |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Callback` | `function` | empty |
+| `Value` | `EnumItem/string` | `"F"` |
+| `CanChange` | `boolean` | true |
+| `Size` | `"Small"/"Default"/"Large"` | `"Default"` |
+| `Flag` | `string?` | Config saving. |
+
+Methods:
+
+```lua
+BK:Lock()
+BK:Unlock()
+BK:Set("MouseRight")
+BK:SetTitle("Quick Action Key")
+BK:SetDesc("Right mouse now triggers action")
+BK:Highlight()
+BK:Destroy()
+```
+
+---
+
+## Toggle
+
+```lua
+local Toggle = Tab:Toggle({
+    Title = "Toggle",
+    Desc = "Description",
+    Icon = "bird",
+    IconSize = 23,
+    Type = "Checkbox", -- Toggle or Checkbox
+    Value = false,
+    Locked = false,
+    LockedTitle = "Locked",
+    Flag = "toggle_flag",
+    Callback = function(value)
+        print("Toggle:", value)
+    end,
+})
+```
+
+Methods:
+
+```lua
+Toggle:SetTitle("New title")
+Toggle:SetDesc("New desc")
+Toggle:Set(true)
+Toggle:Lock()
+Toggle:Unlock()
+Toggle:Highlight()
+Toggle:Destroy()
+```
+
+---
+
+## ToggleKeybind
+
+`ToggleKeybind` combines a toggle/checkbox with an assignable hotkey.
+
+```lua
+local TK = MainTab:ToggleKeybind({
+    Title = "Kill Aura",
+    Desc = "Toggle with keybind",
+    Type = "Toggle",
+    Value = false,
+    Keybind = Enum.KeyCode.G,
+    CanChange = true,
+    Callback = function(state)
+        print("Kill Aura:", state)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Toggle Keybind"` |
+| `Desc` | `string?` | nil |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Value` | `boolean` | false |
+| `Icon` | `string?` | nil |
+| `IconSize` | `number` | `23` |
+| `Type` | `"Toggle"/"Checkbox"` | `"Toggle"` |
+| `Callback` | `function` | empty |
+| `Keybind` / `Bind` / `Key` | `EnumItem/string` | `"F"` |
+| `CanChange` | `boolean` | true |
+| `Flag` | `string?` | Config saving. |
+
+Methods:
+
+```lua
+TK:Lock()
+TK:Unlock()
+TK:Set(true, true, false)      -- value, isCallback, isAnim/instant flag
+TK:SetKeybind("MouseLeft")
+TK:SetTitle("Kill Aura Key")
+TK:SetDesc("Now bound to left mouse")
+TK:Highlight()
+TK:Destroy()
+```
+
+---
+
+## Slider
+
+```lua
+local Slider = Tab:Slider({
+    Title = "Slider",
+    Desc = "Description",
+    Step = 1,
+    Value = { Min = 20, Max = 120, Default = 70 },
+    Icons = {
+        From = "sfsymbols:sunMinFill",
+        To = "sfsymbols:sunMaxFill",
+    },
+    IsTooltip = true,
+    IsTextbox = true,
+    Width = 130,
+    Locked = false,
+    Flag = "slider_flag",
+    Callback = function(value)
+        print(value)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string?` | nil in source, docs show `"Slider"`. |
+| `Desc` | `string?` | nil |
+| `Value.Min` | `number` | `0` |
+| `Value.Max` | `number` | `100` |
+| `Value.Default` | `number` | `Min` or `0` |
+| `Step` | `number` | `1` |
+| `Icons` | `table?` | `{ From = ..., To = ... }` |
+| `IsTooltip` | `boolean` | false |
+| `IsTextbox` | `boolean?` | Auto true unless no title. |
+| `Width` | `number` | `130` |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives number. |
+
+Methods:
+
+```lua
+Slider:SetTitle("New")
+Slider:SetDesc("New desc")
+Slider:Set(50)
+Slider:SetMax(120)
+Slider:SetMin(0)
+Slider:Lock()
+Slider:Unlock()
+Slider:Highlight()
+Slider:Destroy()
+```
+
+---
+
+## Stepper
+
+`Stepper` is source-observed in WindUI Boreal. It provides plus/minus numeric control with optional hold-repeat.
+
+```lua
+local Stepper = Tab:Stepper({
+    Title = "Amount",
+    Desc = "Increment/decrement value",
+    Value = { Min = 0, Max = 100, Default = 10 },
+    Step = 5,
+    Precision = 0,
+    Prefix = "",
+    Suffix = "%",
+    Callback = function(value, self)
+        print("Stepper:", value)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Stepper"` |
+| `Desc` | `string?` | nil |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Value` | `table/number` | `{ Min = 0, Max = 100, Default = 0 }` or number. |
+| `Step` | `number` | `1` |
+| `Precision` | `number?` | Auto `2` for decimal step; otherwise `0`. |
+| `Prefix` | `string` | empty |
+| `Suffix` | `string` | empty |
+| `Format` | `function?` | Custom display formatter. |
+| `HoldDelay` | `number` | `0.28` |
+| `HoldRate` | `number` | `0.07` |
+| `Width` | `number` | min `168`, default `182` |
+| `ButtonSize` | `number` | min `28`, default `34` |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives `(value, self)`. |
+
+Methods:
+
+```lua
+Stepper:GetValue()
+Stepper:Set(25, true)
+Stepper:Add(5, true)
+Stepper:Increment(5, true)
+Stepper:Decrement(5, true)
+Stepper:SetRange(0, 200, false)
+Stepper:SetStep(10)
+Stepper:SetPrecision(1)
+Stepper:SetPrefix("$")
+Stepper:SetSuffix(" pts")
+Stepper:SetFormat(function(value, min, max, self)
+    return value .. " / " .. max
+end)
+Stepper:Lock()
+Stepper:Unlock()
+Stepper:Destroy()
+```
+
+---
+
+## Dropdown
+
+```lua
+local Dropdown = Tab:Dropdown({
+    Title = "Dropdown",
+    Desc = "Description",
+    Values = { "A", "B", "C" },
+    Value = { "A" },
+    Multi = true,
+    AllowNone = true,
+    SearchBarEnabled = true,
+    Flag = "dropdown_flag",
+    Callback = function(value)
+        print(value)
+    end,
+})
+```
+
+### Dropdown Config
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Dropdown"` |
+| `Desc` | `string?` | nil |
+| `Values` | `table` | `{}` |
+| `Value` | `string/table/number?` | Selected value. Number indexes into `Values`. |
+| `Multi` | `boolean` | false |
+| `AllowNone` | `boolean` | false |
+| `SearchBarEnabled` | `boolean` | false |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `MenuWidth` | `number?` | Optional fixed menu width. |
+| `SpecialType` | `"Player"/"Team"/"None"` | Source-observed special dynamic values. |
+| `ExcludeLocalPlayer` | `boolean` | For player special type. |
+| `AutoRefreshSpecialValues` | `boolean` | Default true. |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function?` | Receives selected value(s). |
+
+### Dropdown Values
+
+Values may be strings:
+
+```lua
+Values = { "Easy", "Normal", "Hard" }
+```
+
+or rich tables:
+
+```lua
+Values = {
+    { Title = "New file", Desc = "Create a new file", Icon = "file-plus" },
+    { Title = "Delete file", Desc = "Permanently delete", Icon = "trash", Locked = true },
+}
+```
+
+Source also supports image values:
+
+```lua
+{ Title = "Player", Image = "rbxassetid://123", ImageSize = 18 }
+```
+
+### Dropdown Methods
+
+```lua
+Dropdown:SetTitle("New")
+Dropdown:SetDesc("New desc")
+Dropdown:Select("A")
+Dropdown:Select({ "A", "B" })
+Dropdown:Refresh({ "D", "E", "F" })
+Dropdown:Open()
+Dropdown:Close()
+Dropdown:GetSelected()
+Dropdown:Lock()
+Dropdown:Unlock()
+Dropdown:Destroy()
+```
+
+Special-value methods:
+
+```lua
+Dropdown:RefreshSpecialValues(true)
+Dropdown:SetSpecialType("Player")
+Dropdown:SetSpecialType("Team")
+Dropdown:SetExcludeLocalPlayer(true)
+Dropdown:SetAutoRefreshSpecialValues(true)
+```
+
+### Player Dropdown Example
+
+```lua
+local PlayerDropdown = Tab:Dropdown({
+    Title = "Target Player",
+    SpecialType = "Player",
+    ExcludeLocalPlayer = true,
+    SearchBarEnabled = true,
+    Callback = function(playerEntry)
+        print(playerEntry and playerEntry.Title)
+    end,
+})
+```
+
+### Team Dropdown Example
+
+```lua
+Tab:Dropdown({
+    Title = "Team",
+    SpecialType = "Team",
+    Callback = function(teamEntry)
+        print(teamEntry and teamEntry.Title)
+    end,
+})
+```
+
+---
+
+## Segmented
+
+`Segmented` is source-observed. It is a compact row of selectable chips/buttons.
+
+```lua
+local Segmented = Tab:Segmented({
+    Title = "Mode",
+    Desc = "Choose one mode",
+    Options = {
+        { Title = "Safe", Value = "safe", Icon = "shield" },
+        { Title = "Normal", Value = "normal" },
+        { Title = "Rage", Value = "rage", Disabled = true },
+    },
+    Value = "normal",
+    AllowNone = false,
+    Callback = function(value, self)
+        print("Selected:", value)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Segmented"` |
+| `Desc` | `string?` | nil |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Options` / `Values` | `table` | `{}` |
+| `Multi` | `boolean` | false |
+| `AllowNone` | `boolean` | false |
+| `MinSelections` | `number` | `0` |
+| `MaxSelections` | `number?` | nil |
+| `Value` | any/table | Initial selection. |
+| `SegmentHeight` | `number` | min `28`, default `32` |
+| `SegmentPaddingX` | `number` | default `12` |
+| `SegmentGap` | `number` | default `6` |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives `(value, self)`. |
+
+Methods:
+
+```lua
+Segmented:Get()
+Segmented:Set("safe")
+Segmented:Select("rage")
+Segmented:Deselect("safe")
+Segmented:Toggle("normal")
+Segmented:SetOptions({ "A", "B", "C" })
+local opts = Segmented:GetOptions()
+Segmented:Lock()
+Segmented:Unlock()
+Segmented:Destroy()
+```
+
+---
+
+## Input
+
+```lua
+local Input = Tab:Input({
+    Title = "Input",
+    Desc = "Description",
+    Value = "Default",
+    InputIcon = "bird",
+    Type = "Input", -- Input or Textarea
+    Placeholder = "Enter...",
+    ClearTextOnFocus = false,
+    Flag = "input_flag",
+    Callback = function(text)
+        print(text)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Input"` |
+| `Desc` | `string?` | nil |
+| `Type` | `"Input"/"Textarea"` | `"Input"` |
+| `InputIcon` | `string?` | false |
+| `Placeholder` | `string` | `"Enter Text..."` |
+| `Value` | `string` | empty |
+| `ClearTextOnFocus` | `boolean` | false |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives text. |
+
+Methods:
+
+```lua
+Input:SetTitle("New")
+Input:SetDesc("New desc")
+Input:Set("new value")
+Input:SetPlaceholder("Type here...")
+Input:Lock()
+Input:Unlock()
+Input:Highlight()
+Input:Destroy()
+```
+
+---
+
+## Keybind
+
+```lua
+local Keybind = Tab:Keybind({
+    Title = "Keybind",
+    Desc = "Description",
+    Value = "G",
+    CanChange = true,
+    Flag = "keybind_flag",
+    Callback = function(value)
+        Window:SetToggleKey(Enum.KeyCode[value])
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Keybind"` |
+| `Desc` | `string?` | nil |
+| `Value` | `EnumItem/string` | `"F"` |
+| `CanChange` | `boolean` | true |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives key name, e.g. `"G"`, `"MouseLeft"`. |
+
+Methods:
+
+```lua
+Keybind:SetTitle("New")
+Keybind:SetDesc("New desc")
+Keybind:Set("H")
+Keybind:Lock()
+Keybind:Unlock()
+Keybind:Destroy()
+```
+
+---
+
+## Colorpicker
+
+```lua
+local Colorpicker = Tab:Colorpicker({
+    Title = "Colorpicker",
+    Desc = "Description",
+    Default = Color3.fromRGB(0, 255, 0),
+    Transparency = 0,
+    Locked = false,
+    Flag = "color_flag",
+    Callback = function(color, transparency)
+        print(color, transparency)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Colorpicker"` |
+| `Desc` | `string?` | nil |
+| `Default` / `Value` | `Color3` | white |
+| `Transparency` | `number?` | Optional alpha support. |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives `(Color3, transparency?)`. |
+
+Methods:
+
+```lua
+Colorpicker:SetTitle("New")
+Colorpicker:SetDesc("New desc")
+Colorpicker:Set(Color3.fromRGB(255, 0, 0), 0.2)
+Colorpicker:Update(Color3.fromRGB(255, 0, 0), 0.2) -- source-observed
+Colorpicker:Lock()
+Colorpicker:Unlock()
+Colorpicker:Destroy()
+```
+
+---
+
+## Paragraph
+
+```lua
+local Paragraph = Tab:Paragraph({
+    Title = "Paragraph",
+    Desc = "Description",
+    Color = "Red",
+    Image = "rbxassetid://id",
+    ImageSize = 30,
+    IconThemed = true,
+    Thumbnail = "rbxassetid://id",
+    ThumbnailSize = 80,
+    Locked = false,
+    Buttons = {
+        { Icon = "bird", Title = "Button", Callback = function() end },
+    },
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Paragraph"` |
+| `Desc` | `string?` | nil |
+| `Color` | `string/Color3?` | nil; string can be `Red`, `Orange`, `Green`, `Blue`, `White`, `Grey`. |
+| `Image` | `string?` | Icon/image source. |
+| `ImageSize` | `number` | `30` |
+| `IconThemed` | `boolean` | false |
+| `Thumbnail` | `string?` | Image source. |
+| `ThumbnailSize` | `number` | `80` |
+| `Buttons` | `table?` | Optional vertical buttons. |
+| `Locked` | `boolean` | false |
+
+Methods:
+
+```lua
+Paragraph:SetTitle("New")
+Paragraph:SetDesc("New desc")
+Paragraph:SetImage("info", 24)
+Paragraph:SetThumbnail("rbxassetid://123", 80)
+Paragraph:Lock()
+Paragraph:Unlock()
+Paragraph:Destroy()
+```
+
+---
+
+## Code
+
+```lua
+local Code = Tab:Code({
+    Title = "Code",
+    Code = "print('Hello!')",
+    OnCopy = function()
+        print("Copied")
+    end,
+})
+```
+
+Config:
+
+| Key | Type |
+|---|---|
+| `Title` | `string?` |
+| `Code` | `string` |
+| `OnCopy` | `function?` |
+
+Methods:
+
+```lua
+Code:SetCode("print('Updated')")
+Code:Set("print('Alias')") -- source alias
+Code:Destroy()
+```
+
+Docs mention `OnCopy(callback)` as a method, but source uses `OnCopy` config callback.
+
+---
+
+## Divider
+
+Dividers separate content. Shiny docs describe horizontal/vertical separators with optional titles.
+
+```lua
+local Divider = MainTab:Divider({
+    Title = "Combat Settings",
+    TitleAlignment = "Center",
+})
+```
+
+### Documented Divider Config
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Orientation` | `"Horizontal"/"Vertical"` | Dynamic: vertical in groups, horizontal otherwise. |
+| `Title` / `Text` | `string` | Horizontal title. |
+| `Thickness` | `number` | Minimum `1`. |
+| `Inset` | `number` | Frame inset. |
+| `TitleSpacing` | `number` | Space around title. |
+| `TitleAlignment` | `"Left"/"Center"/"Right"` | Default `"Center"`. |
+| `Height` | `number` | Horizontal frame height. |
+| `Width` | `number` | Vertical frame width. |
+| `Size` | `UDim2` | Overrides default size. |
+| `Color` | `string/Color3` | Theme `"Divider"` or color. |
+| `Transparency` | `number` | Theme/default transparency. |
+| `TitleColor` | `string/Color3` | Theme `"DividerLabel"`. |
+| `TitleTransparency` | `number` | Title transparency. |
+| `TitleSize` | `number` | Default `13`. |
+
+### Documented Divider Methods
+
+```lua
+Divider:SetTitle("Aimbot Controls")
+Divider:SetThickness(2)
+Divider:SetTitleAlignment("Left")
+Divider:SetTitleSpacing(14)
+```
+
+### Source-Observed Divider Methods
+
+The provided Boreal source also exposes:
+
+```lua
+Divider:SetVisible(true)
+Divider:SetPadding(6)
+Divider:SetTransparency(0.5)
+Divider:SetColor(Color3.fromRGB(255, 255, 255))
+Divider:SetColor("SectionContentDivider")
+Divider:Destroy()
+```
+
+Version note: title-specific divider methods may depend on the exact Shiny build. If using the pasted Boreal `v0.0.2` source, `Thickness`, `Padding`, `Transparency`, and `Color` are definitely source-observed.
+
+---
+
+## Space
+
+Adds empty layout space.
+
+```lua
+Tab:Space()
+Tab:Space({ Columns = 2 })
+Window:Space({ Columns = 1 }) -- sidebar space alias
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Columns` | `number` | `1` |
+
+Returns a `Space` object in content contexts; sidebar APIs may return the raw `Frame`.
+
+---
+
+## Image
+
+```lua
+local Image = Tab:Image({
+    Image = "https://example.com/image.png",
+    AspectRatio = "16:9",
+    Radius = 12,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Image` | `string` | required/recommended |
+| `AspectRatio` | `string/number` | `"16:9"` |
+| `Radius` | `number` | window element radius |
+
+Methods:
+
+```lua
+Image:Destroy()
+```
+
+---
+
+## Video
+
+`Video` embeds a Roblox `VideoFrame` as a UI element.
+
+```lua
+local Video = MainTab:Video({
+    Video = "1234567890",
+    Height = 220,
+    Looped = true,
+    Playing = false,
+    Volume = 0.5,
+    Visible = true,
+})
+```
+
+Config:
+
+| Key | Type | Default / Notes |
+|---|---|---|
+| `Video` | `string/number` | Numeric string/number converts to `rbxassetid://...`. |
+| `Height` | `number` | Default `200`, min `24`. |
+| `Looped` | `boolean` | false |
+| `Playing` | `boolean` | false |
+| `Volume` | `number` | Default `0.5`, clamped `0` to `10`. |
+| `Visible` | `boolean` | true |
+| `Radius` | `number` | Element radius. |
+| `Padding` | `number` | Default `5`. |
+| `Title` | `string?` | Stored metadata, default `"Video"`. |
+| `Desc` | `string?` | Stored metadata. |
+
+Methods:
+
+```lua
+Video:Play()
+Video:Pause()
+Video:SetPlaying(true)
+Video:SetVideo("rbxassetid://1234567890")
+Video:SetVolume(1.2)
+Video:SetLooped(false)
+Video:SetVisible(true)
+Video:SetHeight(240)
+Video:Destroy()
+```
+
+---
+
+## Progress
+
+`Progress` is source-observed. It displays a non-interactive progress bar with optional value label.
+
+```lua
+local Progress = Tab:Progress({
+    Title = "Loading",
+    Desc = "Progress example",
+    Value = { Min = 0, Max = 100, Default = 35 },
+    ShowValue = true,
+    Suffix = "%",
+    Color = "Slider",
+    Callback = function(value, percent, self)
+        print(value, percent)
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Progress"` |
+| `Desc` | `string?` | nil |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Value` | `table/number` | `{ Min=0, Max=100, Default=0 }` |
+| `ShowValue` | `boolean` | true |
+| `Precision` | `number` | `0` |
+| `Prefix` | `string` | empty |
+| `Suffix` | `string` | empty |
+| `Format` | `function?` | `(value, min, max, percent, self) -> string`. |
+| `Color` | `string/Color3?` | Theme tag or color. |
+| `ValueWidth` | `number` | default `96`, min `45`. |
+| `BarHeight` | `number` | default `8`, min `4`. |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives `(value, percent, self)`. |
+
+Methods:
+
+```lua
+Progress:GetPercent()
+Progress:GetValue()
+Progress:SetFormat(function(value, min, max, percent) return tostring(math.floor(percent * 100)) .. "%" end)
+Progress:SetPrefix("[")
+Progress:SetSuffix("]")
+Progress:SetShowValue(true)
+Progress:SetColor(Color3.fromRGB(0, 170, 255))
+Progress:SetRange(0, 200, true)
+Progress:Set(150, true, true)
+Progress:Add(10, true, true)
+Progress:Increment(5, true, true)
+Progress:Lock()
+Progress:Unlock()
+```
+
+---
+
+## Stats
+
+`Stats` is source-observed. It displays key/value rows.
+
+```lua
+local Stats = Tab:Stats({
+    Title = "Runtime Stats",
+    Desc = "Current values",
+    Items = {
+        { Key = "FPS", Value = "60", Color = "Green" },
+        { Key = "Ping", Value = "45ms", Color = Color3.fromRGB(100, 200, 255) },
+    },
+    Callback = function(items, self)
+        print("Stats changed")
+    end,
+})
+```
+
+Config:
+
+| Key | Type | Default |
+|---|---|---|
+| `Title` | `string` | `"Stats"` |
+| `Desc` | `string?` | nil |
+| `Locked` | `boolean` | false |
+| `LockedTitle` | `string?` | nil |
+| `Items` / `Values` | `table` | `{}` |
+| `RowHeight` | `number` | default `21`, min `18`. |
+| `ValueWidth` | `number` | default `128`, min `70`. |
+| `ValueColor` | `string/Color3?` | Default value color. |
+| `Flag` | `string?` | Config saving. |
+| `Callback` | `function` | Receives `(items, self)`. |
+
+Items may be array entries:
+
+```lua
+Items = {
+    { Key = "Kills", Value = 10 },
+    { Label = "Deaths", Value = 2 },
+}
+```
+
+or a map:
+
+```lua
+Items = {
+    FPS = 60,
+    Ping = "45ms",
+}
+```
+
+Methods:
+
+```lua
+Stats:Set({ FPS = 60, Ping = "45ms" })
+Stats:Update("FPS", 75)
+Stats:Remove("Ping")
+Stats:Clear()
+local fps = Stats:Get("FPS")
+local items = Stats:GetItems()
+Stats:SetValueColor("Green")
+Stats:Lock()
+Stats:Unlock()
+Stats:Destroy()
+```
+
+---
+
+## Legacy Group Compatibility
+
+The source contains a `Group` layout container for horizontal layouts:
+
+```lua
+local Group = Tab:Group({})
+Group:Button({ Title = "A" })
+Group:Button({ Title = "B" })
+```
+
+In original WindUI, `Group` was deprecated in favor of newer stack layouts. WindUI Shiny source keeps `Group` for compatibility. Since Shiny docs do not document `HStack`/`VStack`, agents should:
+
+- Use `Section`, `MultiSection`, and normal vertical layouts by default.
+- Use `Group` only if the user explicitly asks for horizontal side-by-side layout or compatibility with old examples.
+- Do not overuse `Group`; it can complicate sizing and future compatibility.
+
+---
+
+## Config System
+
+Configs save and load element states for elements with a `Flag`.
+
+### Setup
+
+```lua
+local Window = WindUI:CreateWindow({
+    Title = "Config Demo",
+    Folder = "ConfigDemo",
+})
+
+local ConfigManager = Window.ConfigManager
+local MyConfig = ConfigManager:CreateConfig("myConfig")
+
+Tab:Toggle({
+    Title = "Toggle",
+    Flag = "ToggleElement",
+    Callback = function() end,
+})
+```
+
+### Config Path
+
+Source-observed path:
+
+```text
+WindUI/[Window.Folder]/config/[configName].json
+```
+
+Note: Original WindUI used `configs/`; Shiny/Boreal source uses singular `config/`.
+
+### ConfigManager Methods
+
+```lua
+local ConfigManager = Window.ConfigManager
+
+local cfg = ConfigManager:CreateConfig("default", false)
+local cfg2 = ConfigManager:Config("other", true) -- alias for CreateConfig
+ConfigManager:SetPath("Custom/Path")
+local names = ConfigManager:AllConfigs()
+local existing = ConfigManager:GetConfig("default")
+local autoload = ConfigManager:GetAutoLoadConfigs()
+ConfigManager:DeleteConfig("old")
+```
+
+### Config Object Methods
+
+```lua
+cfg:SetAsCurrent()
+cfg:Register("flag", element)
+cfg:Unregister("flag")
+cfg:Set("customKey", "customValue")
+local custom = cfg:Get("customKey")
+cfg:SetAutoLoad(true)
+cfg:Save()
+cfg:Load()
+cfg:Delete()
+local data = cfg:GetData()
+```
+
+### Saveable Element Types
+
+Source parser supports:
+
+- `Colorpicker`
+- `Dropdown`
+- `Segmented`
+- `Input`
+- `Keybind`
+- `ButtonKeybind`
+- `Slider`
+- `Stepper`
+- `Progress`
+- `Stats`
+- `Toggle`
+- `ToggleKeybind`
+
+### Config Example
+
+```lua
+local ConfigTab = Window:Tab({ Title = "Configs", Icon = "folder" })
+local ConfigName = "default"
+local ConfigManager = Window.ConfigManager
+
+local NameInput = ConfigTab:Input({
+    Title = "Config Name",
+    Value = ConfigName,
+    Callback = function(value)
+        ConfigName = value
+    end,
+})
+
+local ConfigList = ConfigTab:Dropdown({
+    Title = "Available Configs",
+    Values = ConfigManager:AllConfigs(),
+    Callback = function(value)
+        ConfigName = value
+        NameInput:Set(value)
+    end,
+})
+
+ConfigTab:Button({
+    Title = "Save Config",
+    Icon = "save",
+    Callback = function()
+        local cfg = ConfigManager:CreateConfig(ConfigName)
+        cfg:Save()
+        if ConfigList.Refresh then
+            ConfigList:Refresh(ConfigManager:AllConfigs())
+        end
+        WindUI:Notify({ Title = "Saved", Content = "Config saved.", Icon = "check" })
+    end,
+})
+
+ConfigTab:Button({
+    Title = "Load Config",
+    Icon = "refresh-cw",
+    Callback = function()
+        local cfg = ConfigManager:CreateConfig(ConfigName)
+        local result, err = cfg:Load()
+        if result == false then
+            WindUI:Notify({ Title = "Load Failed", Content = tostring(err), Icon = "x" })
+        else
+            WindUI:Notify({ Title = "Loaded", Content = "Config loaded.", Icon = "check" })
+        end
+    end,
+})
+```
+
+### Config Best Practices
+
+- Always set `Folder` on the window.
+- Every saveable element should have a unique `Flag`.
+- Avoid duplicate flags; the latest element may overwrite flag lookup.
+- File APIs are required: `writefile`, `readfile`, `isfile`, `isfolder`, `makefolder`, etc.
+- Config does not work in normal Roblox Studio without executor file APIs.
+
+---
+
+## Flag Runtime API
+
+WindUI Shiny source adds direct flag inspection and mutation APIs on `Window`.
+
+```lua
+local element = Window:GetFlagElement("feature_enabled")
+local value = Window:GetFlag("feature_enabled")
+local ok, err = Window:SetFlag("feature_enabled", true)
+local flags = Window:ListFlags()
+local hasFlag = Window:HasFlag("feature_enabled")
+local values = Window:GetFlags()
+local results = Window:SetFlags({
+    feature_enabled = true,
+    power_slider = 80,
+})
+```
+
+Methods:
+
+| Method | Description |
+|---|---|
+| `GetFlagElement(flag)` | Returns element object for flag or nil. |
+| `GetFlag(flag)` | Returns current element value/default. |
+| `SetFlag(flag, value, ...)` | Calls element `Set`, `Select`, or `Update` if supported. |
+| `ListFlags()` | Returns sorted flag names. |
+| `HasFlag(flag)` | Boolean flag existence. |
+| `GetFlags()` | Returns map of all flag values. |
+| `SetFlags(table, ...)` | Applies many flags; returns `{ Applied = {}, Failed = {} }`. |
+
+---
+
+## Shortcut Runtime API
+
+Window-level shortcuts are source-observed and independent of element keybinds.
+
+```lua
+local shortcutId = Window:BindShortcut("K", function(input, window, shortcut)
+    print("Shortcut pressed")
+end, {
+    Ctrl = true,
+    Shift = false,
+    Alt = nil, -- nil means ignored
+    EnabledWhenClosed = false,
+    Description = "Ctrl+K action",
+})
+
+Window:UnbindShortcut(shortcutId)
+Window:ClearShortcuts()
+local shortcuts = Window:GetShortcuts()
+```
+
+Config fields:
+
+| Key | Type | Notes |
+|---|---|---|
+| `Ctrl` | `boolean?` | nil ignores modifier; true/false requires exact state. |
+| `Shift` | `boolean?` | Same. |
+| `Alt` | `boolean?` | Same. |
+| `EnabledWhenClosed` | `boolean` | If true, fires when window is closed. |
+| `Description` | `string?` | Metadata. |
+
+---
+
+## Icons
+
+WindUI Shiny inherits WindUI icon support.
+
+### Basic Usage
+
+```lua
+Tab:Button({
+    Title = "Bird",
+    Icon = "bird", -- Lucide default
+})
+
+Tab:Button({
+    Title = "Solar",
+    Icon = "solar:settings-bold",
+})
+
+Tab:Button({
+    Title = "Asset",
+    Icon = "rbxassetid://123456789",
+    IconThemed = true,
+})
+```
+
+### Icon Sources
+
+- Lucide icons by default.
+- Prefixed icon sets supported through the underlying Icons module: `lucide:`, `solar:`, `sfsymbols:`, etc., depending on available icon data.
+- `rbxassetid://...` image assets.
+- Direct URLs, subject to executor support.
+
+### Creator / Icons Advanced API
+
+The source exposes internal creator/icon helpers:
+
+```lua
+WindUI.Creator.AddIcons("custom", {
+    MyIcon = "rbxassetid://123456789",
+})
+```
+
+Agents should avoid relying on internals unless asked for custom icon-packs. For regular UI generation, pass icon strings directly to element configs.
+
+---
+
+## AI Agent Implementation Rules
+
+1. **Use the Shiny loader for Shiny tasks.**
+
+   ```lua
+   local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal"))()
+   ```
+
+2. **Prefer documented Shiny APIs first.** Use extra source-observed APIs only when they are beneficial or requested.
+
+3. **Do not paste the huge minified source into user scripts.** Load the library externally.
+
+4. **One window per library instance.** Do not generate multiple `WindUI:CreateWindow()` calls unless the script reloads WindUI separately.
+
+5. **Use `Folder` whenever configs, keys, images, or file caching are involved.**
+
+6. **Use unique `Flag` values.** Flags are used by configs and runtime flag APIs.
+
+7. **Use `KeyValidator` or `KeySystem.API`; avoid legacy `KeySystem.Key`.**
+
+8. **For Shiny-specific UI, use:**
+   - `ModernLayout = true`
+   - `Watermark = {...}`
+   - `BottomDragBarEnabled = true/false`
+   - `ButtonKeybind` / `ToggleKeybind`
+   - `MultiSection`
+   - `Video`
+   - `Notify` buttons when action feedback is needed.
+
+9. **Callbacks should be safe.** Use `pcall` or nil checks when interacting with environment-specific APIs like `setclipboard`, `request`, `writefile`, or `getcustomasset`.
+
+10. **Callback argument expectations:**
+
+    - `Button`: no arguments.
+    - `ButtonKeybind`: trigger key or nil/mouse click.
+    - `Toggle`: boolean state.
+    - `ToggleKeybind`: boolean state.
+    - `Slider`: number value.
+    - `Stepper`: `(value, self)`.
+    - `Dropdown`: selected value/table or selected table array for multi.
+    - `Segmented`: selected value or value array for multi.
+    - `Input`: text.
+    - `Keybind`: key name string.
+    - `Colorpicker`: `(Color3, transparency?)`.
+    - `Progress`: `(value, percent, self)`.
+    - `Stats`: `(items, self)`.
+    - `Notification button`: source can pass `(notification, buttonObject, index)`.
+
+11. **Legacy `Group` exists but should be used sparingly.** Prefer vertical organization, sections, and MultiSections.
+
+12. **If generating a config panel:** use `Window.ConfigManager:CreateConfig(name)`, `:Save()`, `:Load()`, and dropdown `:Refresh(...)` where available.
+
+13. **If using background media URLs:** warn that executor file APIs are recommended.
+
+14. **If using service key systems:** never expose real API secrets in public generated examples.
+
+15. **When uncertain about version differences:** use the simplest documented method names (`Set`, `Lock`, `Unlock`, `Destroy`) and avoid fragile internal fields.
+
+---
+
+## Complete Starter Template
+
+```lua
+-- WindUI Shiny / Boreal Starter Template
+
+local WindUI = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal"
+))()
+
+WindUI:SetNotificationLower(true)
+
+local Window = WindUI:CreateWindow({
+    Title = "Shiny Example Hub",
+    Author = "by developer",
+    Folder = "ShinyExampleHub",
+    Icon = "sparkles",
+    Theme = "Dark",
+    ToggleKey = Enum.KeyCode.LeftShift,
+    Transparent = true,
+    Resizable = true,
+    ModernLayout = true,
+    BottomDragBarEnabled = true,
+    OpenButton = {
+        Title = "Open Shiny Hub",
+        Icon = "sparkles",
+        Enabled = true,
+        Draggable = true,
+        OnlyMobile = false,
+        Scale = 0.8,
+    },
+    Watermark = {
+        Enabled = true,
+        Text = "Shiny Example | v1.0.0",
+        Position = "bottom-right",
+        Opacity = 0.45,
+        Size = 14,
+    },
+})
+
+Window:Tag({
+    Title = "v1.0.0",
+    Icon = "github",
+    Color = Color3.fromHex("#30ff6a"),
+})
+
+local MainSection = Window:Section({
+    Title = "Main",
+    Icon = "home",
+    Opened = true,
+})
+
+local MainTab = MainSection:Tab({
+    Title = "Dashboard",
+    Icon = "house",
+    Border = true,
+})
+
+local SettingsTab = MainSection:Tab({
+    Title = "Settings",
+    Icon = "settings",
+    Border = true,
+})
+
+Window:SideBarDivider({ Title = "Quick", TitleAlignment = "Left" })
+Window:SideBarButton({
+    Title = "Center Window",
+    Icon = "locate-fixed",
+    Callback = function()
+        Window:SetToTheCenter()
+    end,
+})
+
+MainTab:Paragraph({
+    Title = "Welcome",
+    Desc = "This is a WindUI Shiny starter template.",
+    Image = "info",
+    ImageSize = 24,
+})
+
+local Controls = MainTab:Section({
+    Title = "Controls",
+    Desc = "Common interactive elements",
+    Icon = "sliders-horizontal",
+    Box = true,
+    BoxBorder = true,
+    Opened = true,
+})
+
+Controls:Button({
+    Title = "Notify With Buttons",
+    Icon = "bell",
+    Callback = function()
+        WindUI:Notify({
+            Title = "Action Required",
+            Content = "Choose what to do next.",
+            Icon = "bell",
+            Duration = 10,
+            Buttons = {
+                {
+                    Title = "Apply",
+                    Icon = "check",
+                    Variant = "Primary",
+                    CloseOnClick = true,
+                    Callback = function()
+                        print("Applied")
+                    end,
+                },
+                {
+                    Title = "Dismiss",
+                    Icon = "x",
+                    Variant = "Secondary",
+                },
+            },
+        })
+    end,
+})
+
+Controls:ToggleKeybind({
+    Title = "Example Feature",
+    Desc = "Toggle by clicking or pressing G",
+    Type = "Toggle",
+    Value = false,
+    Keybind = "G",
+    CanChange = true,
+    Flag = "example_feature",
+    Callback = function(state)
+        print("Feature:", state)
+    end,
+})
+
+Controls:Slider({
+    Title = "Power",
+    Value = { Min = 0, Max = 100, Default = 50 },
+    Step = 1,
+    IsTooltip = true,
+    Icons = {
+        From = "sfsymbols:sunMinFill",
+        To = "sfsymbols:sunMaxFill",
+    },
+    Flag = "power",
+    Callback = function(value)
+        print("Power:", value)
+    end,
+})
+
+Controls:Dropdown({
+    Title = "Mode",
+    Values = { "Safe", "Normal", "Aggressive" },
+    Value = "Normal",
+    Flag = "mode",
+    Callback = function(value)
+        print("Mode:", value)
+    end,
+})
+
+local Multi = MainTab:MultiSection({
+    Title = "Profiles",
+    Desc = "Switch between profile tabs",
+    Icon = "layers",
+    Box = true,
+    BoxBorder = true,
+    Opened = true,
+})
+
+local ProfileA = Multi:Tab({ Title = "Profile A", Icon = "star", Selected = true })
+local ProfileB = Multi:Tab({ Title = "Profile B", Icon = "shield" })
+
+ProfileA:Input({
+    Title = "Name",
+    Placeholder = "Profile name...",
+    Flag = "profile_a_name",
+})
+
+ProfileB:Colorpicker({
+    Title = "Accent Color",
+    Default = Color3.fromRGB(0, 170, 255),
+    Transparency = 0,
+    Flag = "profile_b_color",
+})
+
+SettingsTab:Section({
+    Title = "Appearance",
+    Icon = "palette",
+    Box = true,
+    Opened = true,
+})
+
+local themeNames = {}
+for name in pairs(WindUI:GetThemes()) do
+    table.insert(themeNames, name)
+end
+
+SettingsTab:Dropdown({
+    Title = "Theme",
+    Values = themeNames,
+    Value = WindUI:GetCurrentTheme() or "Dark",
+    Flag = "theme",
+    Callback = function(themeName)
+        WindUI:SetTheme(themeName)
+        WindUI:Notify({
+            Title = "Theme Changed",
+            Content = "Now using " .. tostring(themeName),
+            Icon = "palette",
+        })
+    end,
+})
+
+SettingsTab:Toggle({
+    Title = "Transparency",
+    Value = true,
+    Flag = "transparency",
+    Callback = function(enabled)
+        Window:ToggleTransparency(enabled)
+    end,
+})
+
+SettingsTab:Keybind({
+    Title = "Window Toggle Key",
+    Value = "LeftShift",
+    Flag = "window_toggle_key",
+    Callback = function(key)
+        if Enum.KeyCode[key] then
+            Window:SetToggleKey(Enum.KeyCode[key])
+        end
+    end,
+})
+
+SettingsTab:Button({
+    Title = "Save Config",
+    Icon = "save",
+    Callback = function()
+        local cfg = Window.ConfigManager:CreateConfig("default")
+        cfg:Save()
+        WindUI:Notify({
+            Title = "Saved",
+            Content = "Configuration saved.",
+            Icon = "check",
+        })
+    end,
+})
+
+SettingsTab:Button({
+    Title = "Unload UI",
+    Icon = "x",
+    Color = Color3.fromRGB(255, 90, 90),
+    Callback = function()
+        Window:Destroy()
+    end,
+})
+
+MainTab:Select()
+```
+
+---
+
+## Troubleshooting
+
+### Shiny Loader Fails
+
+Check:
+
+- HTTP/loadstring support exists in the environment.
+- The raw GitHub URL is reachable.
+- The fork branch/path is still valid:
+
+```text
+https://raw.githubusercontent.com/jonathabejose-alt/Wind-UI-Boreal/refs/heads/main/WindUI%20Boreal
+```
+
+### Configs Do Not Save
+
+Check:
+
+- `Folder` is set on `CreateWindow`.
+- Executor supports file APIs.
+- Each element has a unique `Flag`.
+- You call `cfg:Save()`.
+- Shiny/Boreal uses `WindUI/<Folder>/config/` in the observed source.
+
+### Key System Gets Stuck
+
+Check:
+
+- `KeyValidator` returns a boolean.
+- Service API args match the service’s `Args` list.
+- `SaveKey` path is writable.
+- Third-party service endpoints are reachable.
+
+### Dropdown Returns Table Instead of String
+
+If `Values` are rich tables, callbacks may receive the original selected table. In multi-select, callbacks receive an array.
+
+```lua
+Callback = function(value)
+    if typeof(value) == "table" then
+        print(value.Title or value.Value or value[1])
+    else
+        print(value)
+    end
+end
+```
+
+### Background Video Does Not Play
+
+- Roblox `VideoFrame` has asset restrictions.
+- Numeric IDs are converted to `rbxassetid://...`.
+- Remote video URLs require executor file APIs and may still not work in `VideoFrame`.
+
+### Search Bar Hidden or Visible Unexpectedly
+
+Docs and source defaults differ slightly. If you want to hide search, explicitly set:
+
+```lua
+HideSearchBar = true
+```
+
+If you want it visible, explicitly set:
+
+```lua
+HideSearchBar = false
+```
+
+### Group Layout Issues
+
+`Group` is compatibility-only. Prefer vertical layout, sections, or MultiSection unless horizontal layout is required.
+
+---
+
+End of WindUI Shiny consolidated documentation.
